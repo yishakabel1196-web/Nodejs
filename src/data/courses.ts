@@ -1,3 +1,7 @@
+// Import additional courses
+import { advancedCourses } from './advancedCourses';
+import { moreCourses } from './moreCourses';
+
 export interface Lesson {
   id: string;
   title: string;
@@ -1876,39 +1880,38 @@ console.log("Users 25+:", filtered.length);`,
   }
 ];
 
-export function getCourse(courseId: string): Course | undefined {
-  return courses.find(c => c.id === courseId);
-}
-
-export function getLesson(courseId: string, lessonId: string): Lesson | undefined {
-  const course = getCourse(courseId);
-  return course?.lessons.find(l => l.id === lessonId);
-}
-
-export function getNextLesson(courseId: string, lessonId: string): Lesson | undefined {
-  const course = getCourse(courseId);
-  if (!course) return undefined;
-  const index = course.lessons.findIndex(l => l.id === lessonId);
-  return course.lessons[index + 1];
-}
-
-export function getPrevLesson(courseId: string, lessonId: string): Lesson | undefined {
-  const course = getCourse(courseId);
-  if (!course) return undefined;
-  const index = course.lessons.findIndex(l => l.id === lessonId);
-  return course.lessons[index - 1];
-}
-
-// Import and re-export all courses
-import { advancedCourses } from './advancedCourses';
-import { moreCourses } from './moreCourses';
-
+// Combine all courses
 export const allCourses: Course[] = [...courses, ...advancedCourses, ...moreCourses];
 
 export function getAllCourses(): Course[] {
   return allCourses;
 }
 
+export function getCourse(courseId: string): Course | undefined {
+  return courses.find(c => c.id === courseId);
+}
+
 export function getCourseById(courseId: string): Course | undefined {
   return allCourses.find(c => c.id === courseId);
 }
+
+export function getLesson(courseId: string, lessonId: string): Lesson | undefined {
+  const course = getCourseById(courseId);
+  return course?.lessons.find(l => l.id === lessonId);
+}
+
+export function getNextLesson(courseId: string, lessonId: string): Lesson | undefined {
+  const course = getCourseById(courseId);
+  if (!course) return undefined;
+  const index = course.lessons.findIndex(l => l.id === lessonId);
+  return course.lessons[index + 1];
+}
+
+export function getPrevLesson(courseId: string, lessonId: string): Lesson | undefined {
+  const course = getCourseById(courseId);
+  if (!course) return undefined;
+  const index = course.lessons.findIndex(l => l.id === lessonId);
+  return course.lessons[index - 1];
+}
+
+
