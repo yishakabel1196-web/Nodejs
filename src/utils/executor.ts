@@ -544,33 +544,17 @@ export function executeCode(code: string): ExecutionResult {
   globalDb.reset();
 
   try {
+    // Only pass console and require as parameters
+    // Users get modules via require() which matches real Node.js behavior
     const fn = new Function(
       'console',
       'require',
-      'express',
-      'pg',
-      'jwt',
-      'bcrypt',
-      'zod',
-      'joi',
-      'db',
-      'app',
       code
     );
 
-    const expressInstance = mockModules.express();
-
     fn(
       sandboxConsole,
-      (mod: string) => mockModules[mod as keyof typeof mockModules],
-      expressInstance,
-      mockModules.pg,
-      mockModules.jsonwebtoken,
-      mockModules.bcrypt,
-      mockModules.zod,
-      mockModules.joi,
-      globalDb,
-      expressInstance
+      (mod: string) => mockModules[mod as keyof typeof mockModules]
     );
 
     return {

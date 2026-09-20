@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Systematically debugged the Node.js Academy codebase using a structured diagnosis approach. Identified and fixed **4 bugs** (1 critical, 3 medium priority). All fixes have been applied and the project builds successfully.
+Systematically debugged the Node.js Academy codebase using a structured diagnosis approach. Identified and fixed **5 bugs** (2 critical, 3 medium priority). All fixes have been applied and the project builds successfully.
 
 ---
 
@@ -311,6 +311,74 @@ const handleSubmit = useCallback(() => {
 3. **Modified**: `src/data/advancedCourses.ts` - Import types from types.ts
 4. **Modified**: `src/data/moreCourses.ts` - Import types from types.ts
 5. **Modified**: `src/pages/LessonPage.tsx` - Fixed useEffect dependencies and callback closures
+6. **Modified**: `src/utils/executor.ts` - Removed conflicting function parameters, fixed module loading
+
+---
+
+## Bug #5: Variable Name Collision in Code Executor (CRITICAL) ✅ FIXED
+
+### Problem
+Error: "Identifier 'express' has already been declared" when running REST API course lessons.
+
+### Location
+`src/utils/executor.ts` lines 547-574
+
+### Root Cause
+The `new Function()` constructor was passing module names as function parameters:
+
+```typescript
+const fn = new Function(
+  'console',
+  'require',
+  'express',    // ❌ 'express' is a PARAMETER
+  'pg',
+  'jwt',
+  'bcrypt',
+  'zod',
+  'joi',
+  'db',
+  'app',
+  code          // User code: const express = require('express');
+);
+```
+
+When user code does:
+```javascript
+const express = require('express');
+```
+
+JavaScript tries to declare `const express` but **`express` is already a function parameter!** This causes:
+```
+SyntaxError: Identifier 'express' has already been declared
+```
+
+### Fix Applied
+Removed all module names from function parameters. Only pass `console` and `require`:
+
+```typescript
+const fn = new Function(
+  'console',
+  'require',
+  code
+);
+
+fn(
+  sandboxConsole,
+  (mod: string) => mockModules[mod as keyof typeof mockModules]
+);
+```
+
+Now users get modules via `require()` which matches real Node.js behavior:
+```javascript
+const express = require('express');  // ✅ Works!
+const app = express();
+```
+
+### Verification
+✅ Build succeeds without errors  
+✅ REST API course lessons execute correctly  
+✅ All modules (express, pg, jwt, bcrypt, zod) work via require()  
+✅ Matches real Node.js module loading pattern
 
 ---
 
@@ -322,6 +390,7 @@ All identified bugs have been fixed and verified. The application now:
 - ✅ Executes code with current file content
 - ✅ Maintains proper React hook dependencies
 - ✅ Builds successfully without errors
+- ✅ Code executor matches real Node.js behavior
 
 The codebase is now more robust and maintainable, following React best practices and avoiding common pitfalls.
 
