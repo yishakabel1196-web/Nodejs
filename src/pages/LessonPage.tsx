@@ -120,7 +120,8 @@ export default function LessonPage() {
       setShowSolution(false);
       setActiveTab('learn');
     }
-  }, [lessonId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonId, lesson?.id]);
 
   if (!course || !lesson) {
     return (
@@ -144,7 +145,7 @@ export default function LessonPage() {
     if (fileSystem.activeFile) {
       fileSystem.updateFileContent(fileSystem.activeFile, value || '');
     }
-  }, [fileSystem.activeFile, fileSystem.updateFileContent]);
+  }, [fileSystem]);
 
   const handleRun = useCallback(() => {
     setIsRunning(true);
@@ -157,9 +158,10 @@ export default function LessonPage() {
       setIsCorrect(null);
       setIsRunning(false);
     }, 300);
-  }, [fileSystem.getFileContent]);
+  }, [fileSystem]);
 
   const handleSubmit = useCallback(() => {
+    if (!lesson || !course) return;
     setIsRunning(true);
     setTimeout(() => {
       const mainCode = fileSystem.getFileContent('src/index.js');
@@ -178,28 +180,30 @@ export default function LessonPage() {
       }
       setIsRunning(false);
     }, 300);
-  }, [fileSystem.getFileContent, lesson, course.id, markComplete]);
+  }, [fileSystem, lesson, course, markComplete]);
 
   const handleReset = useCallback(() => {
+    if (!lesson) return;
     fileSystem.updateFileContent('src/index.js', lesson.exercise.starterCode);
     setOutput('');
     setError(null);
     setIsCorrect(null);
     setShowHint(false);
-  }, [lesson, fileSystem.updateFileContent]);
+  }, [lesson, fileSystem]);
 
   const handleShowSolution = useCallback(() => {
+    if (!lesson) return;
     setShowSolution(true);
     fileSystem.updateFileContent('src/index.js', lesson.exercise.solution);
-  }, [lesson, fileSystem.updateFileContent]);
+  }, [lesson, fileSystem]);
 
   const handleFileCreate = useCallback((path: string, isFolder: boolean) => {
     fileSystem.createFile(path, isFolder);
-  }, [fileSystem.createFile]);
+  }, [fileSystem]);
 
   const handleFileDelete = useCallback((path: string) => {
     fileSystem.deleteFile(path);
-  }, [fileSystem.deleteFile]);
+  }, [fileSystem]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-950 text-white overflow-hidden">

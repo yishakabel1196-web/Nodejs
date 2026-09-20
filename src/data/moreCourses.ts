@@ -1,4 +1,4 @@
-import { Course } from './courses';
+import { Course } from './types';
 
 export const moreCourses: Course[] = [
   {

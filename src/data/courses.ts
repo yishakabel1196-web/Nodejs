@@ -1,29 +1,10 @@
+// Import and re-export types
+export type { Lesson, Course } from './types';
+import type { Lesson, Course } from './types';
+
 // Import additional courses
 import { advancedCourses } from './advancedCourses';
 import { moreCourses } from './moreCourses';
-
-export interface Lesson {
-  id: string;
-  title: string;
-  theory: string;
-  exampleCode: string;
-  exercise: {
-    instructions: string;
-    starterCode: string;
-    expectedOutput: string;
-    solution: string;
-    hint?: string;
-  };
-}
-
-export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  color: string;
-  lessons: Lesson[];
-}
 
 export const courses: Course[] = [
   {
