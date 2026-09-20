@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getCourse } from '../data/courses';
+import { getCourseById } from '../data/courses';
 import { useProgress } from '../hooks/useProgress';
 
 export default function CoursePage() {
@@ -7,7 +7,7 @@ export default function CoursePage() {
   const navigate = useNavigate();
   const { isCompleted, getCourseProgress } = useProgress();
   
-  const course = getCourse(courseId || '');
+  const course = getCourseById(courseId || '');
   
   if (!course) {
     return (

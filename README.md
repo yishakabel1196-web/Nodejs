@@ -1,6 +1,6 @@
 # Node.js Academy 🚀
 
-An interactive Node.js learning platform with a built-in code editor, structured courses, and progress tracking.
+An interactive Node.js learning platform with a built-in code editor, structured courses, multi-file IDE, and progress tracking.
 
 ![Node.js Academy](https://img.shields.io/badge/Node.js-Learning%20Platform-green?style=for-the-badge&logo=node.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react&logoColor=white)
@@ -9,81 +9,59 @@ An interactive Node.js learning platform with a built-in code editor, structured
 
 ## ✨ Features
 
-- **Interactive Code Editor**: Full Monaco Editor (VS Code) with syntax highlighting, autocomplete, and line numbers
-- **4 Comprehensive Courses**:
-  - 🟢 Node.js Basics
-  - ⚡ Async Programming
-  - 🚀 Express.js
-  - 📁 File System
-- **20 Hands-on Lessons**: Each with theory, examples, exercises, and solutions
-- **Instant Code Execution**: Run JavaScript code directly in the browser
+- **Full IDE Experience**: Monaco Editor (VS Code) with file tree, tabs, create/delete files
+- **9 Comprehensive Courses** covering the full backend development stack
+- **45+ Hands-on Lessons** with theory, examples, exercises, and solutions
+- **Enhanced Code Execution**: Simulates Express, PostgreSQL, JWT, bcrypt, Zod validation
 - **Progress Tracking**: localStorage-based progress persistence
 - **Responsive Design**: Works on desktop and mobile devices
 - **Dark Mode**: Beautiful dark theme with blue/cyan accents
 
+## 📚 Courses
+
+### Core Fundamentals
+1. 🟢 **Node.js Basics** - Variables, functions, arrays, objects, control flow
+2. ⚡ **Async Programming** - Callbacks, promises, async/await, event emitters
+3. 🚀 **Express.js** - Routing, middleware, request/response, error handling
+4. 📁 **File System** - fs module, path, directories, streams, JSON files
+
+### Advanced Backend
+5. 🌐 **REST API Design** - REST principles, validation, error handling, pagination, versioning
+6. 🗄️ **PostgreSQL & SQL** - Queries, node-postgres, schema design, transactions, optimization
+7. 🔐 **Authentication & Security** - JWT, bcrypt, auth middleware, login/register, security
+8. 🧪 **Testing Node.js** - Unit tests, async testing, integration tests, coverage, CI
+9. 🛡️ **Validation & Error Handling** - Input validation, custom errors, middleware, logging, health checks
+
 ## 🎯 Learning Path
 
-### Course 1: Node.js Basics
-1. Hello World
-2. Variables & Types
-3. Functions
-4. Arrays & Objects
-5. Conditionals & Loops
-
-### Course 2: Async Programming
-1. Callbacks
-2. Promises
-3. Async/Await
-4. Event Emitter
-5. Error Handling
-
-### Course 3: Express.js
-1. Introduction to Express
-2. Middleware
-3. Routing
-4. Request & Response
-5. Error Handling in Express
-
-### Course 4: File System
-1. File System Basics
-2. Path Module
-3. Working with Directories
-4. Streams
-5. Working with JSON Files
+Each lesson follows a consistent pattern:
+1. **Theory** - Conceptual explanation with examples
+2. **Example Code** - Working code demonstrations
+3. **Exercise** - Hands-on coding challenge
+4. **Solution** - Reference implementation (hidden by default)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
 
-1. Clone the repository:
 ```bash
 git clone https://github.com/YOUR_USERNAME/nodejs-academy.git
 cd nodejs-academy
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Start the development server:
-```bash
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+Open your browser and navigate to `http://localhost:5173`
 
 ### Build for Production
 
 ```bash
 npm run build
 ```
-
-The built files will be in the `dist/` directory.
 
 ## 🛠️ Tech Stack
 
@@ -99,48 +77,63 @@ The built files will be in the `dist/` directory.
 ```
 nodejs-academy/
 ├── src/
-│   ├── components/       # Reusable components
+│   ├── components/
+│   │   └── FileTree.tsx       # File explorer with tabs
 │   ├── data/
-│   │   └── courses.ts    # Course and lesson data
+│   │   ├── courses.ts         # Core course data
+│   │   ├── advancedCourses.ts # REST API + PostgreSQL courses
+│   │   └── moreCourses.ts     # Auth + Testing + Validation courses
 │   ├── hooks/
-│   │   └── useProgress.ts # Progress tracking hook
+│   │   └── useProgress.ts     # Progress tracking hook
 │   ├── pages/
-│   │   ├── HomePage.tsx      # Landing page with course cards
-│   │   ├── CoursePage.tsx    # Course overview with lessons list
-│   │   └── LessonPage.tsx    # Interactive lesson with editor
+│   │   ├── HomePage.tsx       # Landing page with course cards
+│   │   ├── CoursePage.tsx     # Course overview with lessons list
+│   │   └── LessonPage.tsx     # Interactive lesson with IDE
 │   ├── utils/
-│   │   └── executor.ts   # Code execution sandbox
-│   ├── App.tsx           # Main app with routing
-│   ├── main.tsx          # Entry point
-│   └── index.css         # Global styles
+│   │   └── executor.ts        # Code execution with simulated modules
+│   ├── App.tsx                # Main app with routing
+│   ├── main.tsx               # Entry point
+│   └── index.css              # Global styles
 ├── index.html
 ├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── tailwind.config.js
+└── README.md
 ```
 
-## 🎨 Features in Detail
+## 🎮 IDE Features
 
-### Code Execution
-The platform uses a sandboxed execution environment that:
-- Runs JavaScript code in the browser
-- Captures console.log output
-- Handles errors gracefully
-- Compares output against expected results
+### File Explorer
+- Browse project files in a tree structure
+- Create new files and folders
+- Delete files with right-click context menu
+- Different project structures per course type
 
-### Progress Tracking
-- Automatically saves completed lessons to localStorage
-- Shows progress bars on course cards
-- Displays completion status on lessons
-- Persists across browser sessions
+### Multi-File Editing
+- Tabbed interface for open files
+- Switch between files easily
+- Each lesson has a realistic project structure
 
-### Lesson Structure
-Each lesson follows a consistent pattern:
-1. **Theory** - Conceptual explanation with examples
-2. **Example Code** - Working code demonstrations
-3. **Exercise** - Hands-on coding challenge
-4. **Solution** - Reference implementation (hidden by default)
+### Enhanced Execution
+The platform simulates real Node.js modules:
+- **Express** - Routes, middleware, request/response
+- **PostgreSQL (pg)** - Queries, connection pools
+- **jsonwebtoken** - Sign and verify JWTs
+- **bcrypt** - Hash and compare passwords
+- **Zod** - Schema validation
+- **Joi** - Input validation
+
+## 🏗️ Architecture
+
+### Phase 1 (Current)
+- ✅ Browser-based learning platform
+- ✅ 9 courses with 45+ lessons
+- ✅ Monaco Editor with file tree
+- ✅ Simulated backend execution
+
+### Phase 2 (Planned)
+- 🔄 Real backend execution with Docker
+- 🔄 PostgreSQL database integration
+- 🔄 Cloud-hosted execution environment
+- 🔄 User accounts and cloud progress sync
 
 ## 🤝 Contributing
 
@@ -152,17 +145,13 @@ Contributions are welcome! Feel free to:
 
 ## 📝 License
 
-This project is open source and available under the [MIT License](LICENSE).
+MIT License
 
 ## 🙏 Acknowledgments
 
 - Inspired by interactive learning platforms like freeCodeCamp and Codecademy
+- Skills methodology from [mattpocock/skills](https://github.com/mattpocock/skills)
 - Built with modern web technologies
-- Designed for developers who learn by doing
-
-## 📧 Contact
-
-Created with ❤️ for the Node.js community.
 
 ---
 

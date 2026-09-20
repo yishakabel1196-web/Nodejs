@@ -1898,3 +1898,17 @@ export function getPrevLesson(courseId: string, lessonId: string): Lesson | unde
   const index = course.lessons.findIndex(l => l.id === lessonId);
   return course.lessons[index - 1];
 }
+
+// Import and re-export all courses
+import { advancedCourses } from './advancedCourses';
+import { moreCourses } from './moreCourses';
+
+export const allCourses: Course[] = [...courses, ...advancedCourses, ...moreCourses];
+
+export function getAllCourses(): Course[] {
+  return allCourses;
+}
+
+export function getCourseById(courseId: string): Course | undefined {
+  return allCourses.find(c => c.id === courseId);
+}

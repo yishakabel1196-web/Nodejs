@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
-import { courses } from '../data/courses';
+import { allCourses } from '../data/courses';
 import { useProgress } from '../hooks/useProgress';
 
 export default function HomePage() {
   const { getCourseProgress, getTotalProgress } = useProgress();
+  const courses = allCourses;
   const totalLessons = courses.reduce((sum, c) => sum + c.lessons.length, 0);
   const overallProgress = getTotalProgress(totalLessons);
 
@@ -81,8 +82,9 @@ export default function HomePage() {
 
       {/* Course Cards */}
       <section className="max-w-7xl mx-auto px-6 pb-20">
-        <h2 className="text-2xl font-bold mb-8 text-center">Choose Your Path</h2>
-        <div className="grid md:grid-cols-2 gap-6">
+        <h2 className="text-2xl font-bold mb-3 text-center">Choose Your Path</h2>
+        <p className="text-center text-gray-400 mb-8">{courses.length} courses • {totalLessons} lessons • From basics to production-ready backend development</p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course) => {
             const progress = getCourseProgress(course.id, course.lessons.length);
             return (
