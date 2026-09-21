@@ -30,7 +30,35 @@ REST (Representational State Transfer) is an architectural style for designing n
 ### Status Code Categories
 - **2xx**: Success (200 OK, 201 Created, 204 No Content)
 - **4xx**: Client error (400 Bad Request, 401 Unauthorized, 404 Not Found)
-- **5xx**: Server error (500 Internal Server Error)`,
+- **5xx**: Server error (500 Internal Server Error)
+
+According to the [HTTP RFC 7231](https://tools.ietf.org/html/rfc7231), status codes are standardized to ensure consistent behavior across different implementations.`,
+        prerequisites: ['Node.js Basics', 'HTTP Fundamentals'],
+        spiralConnections: [
+          {
+            concept: 'HTTP Methods',
+            fromLesson: 'Node.js Basics - HTTP Module',
+            connection: 'Now using Express routing instead of raw http module'
+          }
+        ],
+        nodeVersion: '20.x LTS',
+        furtherReading: [
+          {
+            title: 'Microsoft REST API Guidelines',
+            url: 'https://github.com/microsoft/api-guidelines',
+            type: 'docs'
+          },
+          {
+            title: 'Roy Fielding\'s Dissertation on REST',
+            url: 'https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm',
+            type: 'book'
+          },
+          {
+            title: 'HTTP Status Codes - MDN',
+            url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status',
+            type: 'docs'
+          }
+        ],
         exampleCode: `// RESTful API design
 const express = require('express');
 const app = express();
@@ -95,7 +123,77 @@ app.delete('/api/products/:id', (req, res) => {
 });
 
 console.log('Products API ready');`,
-          hint: 'Use HTTP methods: GET for reading, POST for creating, DELETE for removing. Return 201 for successful creation, 204 for successful deletion.'
+          hints: [
+            'Think about which HTTP method maps to each operation: reading = GET, creating = POST, deleting = DELETE',
+            'Remember that POST should return 201 (Created) and DELETE should return 204 (No Content)',
+            'Use app.get(), app.post(), app.delete() methods. Access route parameters with req.params.id'
+          ],
+          commonMistakes: [
+            {
+              mistake: 'Using 200 for POST instead of 201',
+              hint: 'POST creates a new resource, so it should return 201 Created, not 200 OK'
+            },
+            {
+              mistake: 'Forgetting to handle the :id parameter',
+              hint: 'Use req.params.id to access the ID from the URL path'
+            }
+          ],
+          alternativeSolutions: [
+            {
+              approach: 'Using Express Router for better organization',
+              code: `const express = require('express');
+const router = express.Router();
+
+router.get('/products', (req, res) => {
+  res.json({ products: [] });
+});
+
+router.get('/products/:id', (req, res) => {
+  res.json({ id: req.params.id });
+});
+
+router.post('/products', (req, res) => {
+  res.status(201).json({ id: 1, ...req.body });
+});
+
+router.delete('/products/:id', (req, res) => {
+  res.status(204).send();
+});
+
+const app = express();
+app.use('/api', router);
+console.log('Products API ready');`,
+              tradeoffs: 'More organized for large APIs, but adds complexity for simple APIs'
+            },
+            {
+              approach: 'Using async/await for future database integration',
+              code: `const express = require('express');
+const app = express();
+
+app.get('/api/products', async (req, res) => {
+  // const products = await db.query('SELECT * FROM products');
+  res.json({ products: [] });
+});
+
+app.get('/api/products/:id', async (req, res) => {
+  // const product = await db.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+  res.json({ id: req.params.id });
+});
+
+app.post('/api/products', async (req, res) => {
+  // const result = await db.query('INSERT INTO products ...');
+  res.status(201).json({ id: 1, ...req.body });
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+  // await db.query('DELETE FROM products WHERE id = $1', [req.params.id]);
+  res.status(204).send();
+});
+
+console.log('Products API ready');`,
+              tradeoffs: 'Ready for async database operations, but unnecessary complexity if not using async data sources'
+            }
+          ]
         }
       },
       {

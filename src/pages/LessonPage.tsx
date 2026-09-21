@@ -100,7 +100,7 @@ export default function LessonPage() {
   const [activeTab, setActiveTab] = useState<Tab>('learn');
   const [showSolution, setShowSolution] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [showHint, setShowHint] = useState(false);
+  const [hintLevel, setHintLevel] = useState(0); // 0 = no hint, 1-3 = progressive hints
   const [isRunning, setIsRunning] = useState(false);
   const [showFileTree, setShowFileTree] = useState(true);
 
@@ -116,7 +116,7 @@ export default function LessonPage() {
       setOutput('');
       setError(null);
       setIsCorrect(null);
-      setShowHint(false);
+      setHintLevel(0);
       setShowSolution(false);
       setActiveTab('learn');
     }
@@ -188,7 +188,7 @@ export default function LessonPage() {
     setOutput('');
     setError(null);
     setIsCorrect(null);
-    setShowHint(false);
+    setHintLevel(0);
   }, [lesson, fileSystem]);
 
   const handleShowSolution = useCallback(() => {
@@ -313,6 +313,68 @@ export default function LessonPage() {
           <div className="flex-1 overflow-y-auto p-5">
             {activeTab === 'learn' && (
               <div className="prose prose-invert max-w-none">
+                {/* Version Badge */}
+                {lesson.nodeVersion && (
+                  <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs">
+                    <span>⚡</span>
+                    <span>Tested on Node.js {lesson.nodeVersion}</span>
+                  </div>
+                )}
+
+                {/* Prerequisites */}
+                {lesson.prerequisites && lesson.prerequisites.length > 0 && (
+                  <div className="mb-4 p-3 rounded-lg bg-purple-500/5 border border-purple-500/20">
+                    <h4 className="text-sm font-medium text-purple-300 mb-2 flex items-center gap-1">
+                      <span>📋</span> Prerequisites
+                    </h4>
+                    <ul className="text-xs text-purple-200/70 space-y-1">
+                      {lesson.prerequisites.map((prereq, idx) => (
+                        <li key={idx} className="flex items-center gap-1">
+                          <span>•</span>
+                          <span>{prereq}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Spiral Learning Connections */}
+                {lesson.spiralConnections && lesson.spiralConnections.length > 0 && (
+                  <div className="mb-4 p-3 rounded-lg bg-green-500/5 border border-green-500/20">
+                    <h4 className="text-sm font-medium text-green-300 mb-2 flex items-center gap-1">
+                      <span>🔄</span> Building On Previous Concepts
+                    </h4>
+                    <div className="space-y-2">
+                      {lesson.spiralConnections.map((connection, idx) => (
+                        <div key={idx} className="text-xs text-green-200/70">
+                          <span className="font-medium text-green-300">{connection.concept}</span>
+                          <span className="text-gray-500"> from </span>
+                          <span className="text-green-300">{connection.fromLesson}</span>
+                          <span className="text-gray-500"> → </span>
+                          <span>{connection.connection}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Deprecation Warnings */}
+                {lesson.deprecationWarnings && lesson.deprecationWarnings.length > 0 && (
+                  <div className="mb-4 p-3 rounded-lg bg-red-500/5 border border-red-500/20">
+                    <h4 className="text-sm font-medium text-red-300 mb-2 flex items-center gap-1">
+                      <span>⚠️</span> Deprecation Warnings
+                    </h4>
+                    <ul className="text-xs text-red-200/70 space-y-1">
+                      {lesson.deprecationWarnings.map((warning, idx) => (
+                        <li key={idx} className="flex items-start gap-1">
+                          <span>•</span>
+                          <span>{warning}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <div
                   className="text-gray-300 leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: formatMarkdown(lesson.theory) }}
@@ -333,6 +395,36 @@ export default function LessonPage() {
                     </pre>
                   </div>
                 </div>
+
+                {/* Further Reading Section */}
+                {lesson.furtherReading && lesson.furtherReading.length > 0 && (
+                  <div className="mt-6 p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
+                    <h3 className="text-sm font-bold text-indigo-300 mb-3 flex items-center gap-2">
+                      <span>📚</span> Further Reading
+                    </h3>
+                    <ul className="space-y-2">
+                      {lesson.furtherReading.map((resource, idx) => (
+                        <li key={idx}>
+                          <a
+                            href={resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-indigo-300 hover:text-indigo-200 flex items-center gap-2 group"
+                          >
+                            <span className="text-indigo-400">
+                              {resource.type === 'docs' && '📖'}
+                              {resource.type === 'blog' && '📝'}
+                              {resource.type === 'book' && '📕'}
+                              {resource.type === 'video' && '🎥'}
+                            </span>
+                            <span className="group-hover:underline">{resource.title}</span>
+                            <span className="text-indigo-500 text-[10px] uppercase">({resource.type})</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
 
@@ -345,19 +437,76 @@ export default function LessonPage() {
                   <p className="text-gray-300 leading-relaxed text-sm">{lesson.exercise.instructions}</p>
                 </div>
 
-                {lesson.exercise.hint && (
+                {/* Progressive Hints System */}
+                {(lesson.exercise.hints || lesson.exercise.hint) && (
                   <div className="mb-4">
-                    <button
-                      onClick={() => setShowHint(!showHint)}
-                      className="text-sm text-yellow-400 hover:text-yellow-300 flex items-center gap-1"
-                    >
-                      <span>{showHint ? '▼' : '▶'}</span>
-                      {showHint ? 'Hide Hint' : 'Show Hint'}
-                    </button>
-                    {showHint && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-medium text-yellow-400">💡 Hints</span>
+                      {hintLevel > 0 && (
+                        <span className="text-xs text-gray-500">Level {hintLevel}/3</span>
+                      )}
+                    </div>
+                    
+                    {/* Hint Level 1 */}
+                    {hintLevel === 0 && (
+                      <button
+                        onClick={() => setHintLevel(1)}
+                        className="text-sm text-yellow-400 hover:text-yellow-300 flex items-center gap-1"
+                      >
+                        <span>▶</span> Show Hint 1 (Basic)
+                      </button>
+                    )}
+                    
+                    {hintLevel >= 1 && (
                       <div className="mt-2 p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-lg">
-                        <p className="text-sm text-yellow-200/80">{lesson.exercise.hint}</p>
+                        <p className="text-sm text-yellow-200/80">
+                          {lesson.exercise.hints?.[0] || lesson.exercise.hint || 'Try breaking the problem into smaller steps.'}
+                        </p>
+                        {hintLevel === 1 && (
+                          <button
+                            onClick={() => setHintLevel(2)}
+                            className="mt-2 text-xs text-yellow-400 hover:text-yellow-300"
+                          >
+                            Need more help? → Show Hint 2
+                          </button>
+                        )}
                       </div>
+                    )}
+                    
+                    {/* Hint Level 2 */}
+                    {hintLevel >= 2 && (
+                      <div className="mt-2 p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg">
+                        <p className="text-sm text-orange-200/80">
+                          {lesson.exercise.hints?.[1] || 'Check the documentation for the specific method or pattern needed.'}
+                        </p>
+                        {hintLevel === 2 && (
+                          <button
+                            onClick={() => setHintLevel(3)}
+                            className="mt-2 text-xs text-orange-400 hover:text-orange-300"
+                          >
+                            Still stuck? → Show Hint 3 (Detailed)
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Hint Level 3 */}
+                    {hintLevel >= 3 && (
+                      <div className="mt-2 p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
+                        <p className="text-sm text-red-200/80">
+                          {lesson.exercise.hints?.[2] || 'Review the example code and compare it with your implementation.'}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Reset hints */}
+                    {hintLevel > 0 && (
+                      <button
+                        onClick={() => setHintLevel(0)}
+                        className="mt-2 text-xs text-gray-500 hover:text-gray-400"
+                      >
+                        ↺ Reset hints
+                      </button>
                     )}
                   </div>
                 )}
@@ -423,6 +572,33 @@ export default function LessonPage() {
                     >
                       Load into editor →
                     </button>
+
+                    {/* Alternative Solutions */}
+                    {lesson.exercise.alternativeSolutions && lesson.exercise.alternativeSolutions.length > 0 && (
+                      <div className="mt-6">
+                        <h4 className="text-sm font-bold text-purple-300 mb-3 flex items-center gap-2">
+                          <span>🔀</span> Alternative Approaches
+                        </h4>
+                        <div className="space-y-4">
+                          {lesson.exercise.alternativeSolutions.map((alt, idx) => (
+                            <div key={idx} className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xs font-medium text-purple-300">Approach {idx + 1}:</span>
+                                <span className="text-xs text-purple-200/70">{alt.approach}</span>
+                              </div>
+                              <div className="bg-gray-900 rounded-lg border border-white/10 overflow-hidden mb-2">
+                                <pre className="p-3 text-xs overflow-x-auto">
+                                  <code className="text-gray-300">{alt.code}</code>
+                                </pre>
+                              </div>
+                              <div className="text-xs text-purple-200/60">
+                                <span className="font-medium text-purple-300">Trade-offs:</span> {alt.tradeoffs}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
