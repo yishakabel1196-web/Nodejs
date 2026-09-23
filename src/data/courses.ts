@@ -1,25 +1,10 @@
-export interface Lesson {
-  id: string;
-  title: string;
-  theory: string;
-  exampleCode: string;
-  exercise: {
-    instructions: string;
-    starterCode: string;
-    expectedOutput: string;
-    solution: string;
-    hint?: string;
-  };
-}
+// Import and re-export types
+export type { Lesson, Course } from './types';
+import type { Lesson, Course } from './types';
 
-export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  color: string;
-  lessons: Lesson[];
-}
+// Import additional courses
+import { advancedCourses } from './advancedCourses';
+import { moreCourses } from './moreCourses';
 
 export const courses: Course[] = [
   {
@@ -1876,25 +1861,38 @@ console.log("Users 25+:", filtered.length);`,
   }
 ];
 
+// Combine all courses
+export const allCourses: Course[] = [...courses, ...advancedCourses, ...moreCourses];
+
+export function getAllCourses(): Course[] {
+  return allCourses;
+}
+
 export function getCourse(courseId: string): Course | undefined {
   return courses.find(c => c.id === courseId);
 }
 
+export function getCourseById(courseId: string): Course | undefined {
+  return allCourses.find(c => c.id === courseId);
+}
+
 export function getLesson(courseId: string, lessonId: string): Lesson | undefined {
-  const course = getCourse(courseId);
+  const course = getCourseById(courseId);
   return course?.lessons.find(l => l.id === lessonId);
 }
 
 export function getNextLesson(courseId: string, lessonId: string): Lesson | undefined {
-  const course = getCourse(courseId);
+  const course = getCourseById(courseId);
   if (!course) return undefined;
   const index = course.lessons.findIndex(l => l.id === lessonId);
   return course.lessons[index + 1];
 }
 
 export function getPrevLesson(courseId: string, lessonId: string): Lesson | undefined {
-  const course = getCourse(courseId);
+  const course = getCourseById(courseId);
   if (!course) return undefined;
   const index = course.lessons.findIndex(l => l.id === lessonId);
   return course.lessons[index - 1];
 }
+
+

@@ -1,20 +1,13 @@
-import { HashRouter, Routes, Route, useParams } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import CoursePage from './pages/CoursePage';
-import LessonPage from './pages/LessonPage';
-
-function LessonPageWrapper() {
-  const { lessonId } = useParams();
-  return <LessonPage key={lessonId} />;
-}
+import ChallengePage from './pages/ChallengePage';
 
 function App() {
   return (
     <HashRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/course/:courseId" element={<CoursePage />} />
-        <Route path="/course/:courseId/lesson/:lessonId" element={<LessonPageWrapper />} />
+        <Route path="/challenge/:day" element={<ChallengePage />} />
       </Routes>
     </HashRouter>
   );
